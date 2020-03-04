@@ -31,7 +31,8 @@ def world(request):
     """
     data = []
     for room in Room.objects.all():
-        data.append({'title': room.title, 'description': room.description})
+        data.append({'title': room.title, 'description': room.description,
+                     'n': room.n_to, 's': room.s_to, 'e': room.e_to, 'w': room.w_to})
     return JsonResponse({'data': data})
 
 

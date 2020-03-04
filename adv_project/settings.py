@@ -130,6 +130,10 @@ REST_FRAMEWORK = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = ['http://localhost:3000',
+                         'https://ant-adventure.now.sh']
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/

@@ -21,9 +21,10 @@ class Room:
         self.y = y
 
     def __repr__(self):
-        if self.e_to is not None:
-            return f"({self.x}, {self.y}) -> ({self.e_to.x}, {self.e_to.y})"
-        return f"({self.x}, {self.y})"
+        return f'({self.x}, {self.y})'
+        # if self.e_to is not None:
+        #     return f"({self.x}, {self.y}) -> ({self.e_to.x}, {self.e_to.y})"
+        # return f"({self.x}, {self.y})"
 
     def connect_rooms(self, connecting_room, direction):
         '''
