@@ -80,6 +80,8 @@ class World:
         start_coords = (size_y // 2, size_x // 2)
         start_room = grid[start_coords[0]][start_coords[1]] = Room(str(
             uuid4()), 'Start room', 'the adventurer begins their journey', start_coords[1], start_coords[0])
+        # set world on the room
+        # start_room.save()
         # push cell to stack
         stack.append(start_room)
         #  while the stack is not empty:

@@ -19,10 +19,15 @@ def initialize(request):
     user = request.user
     player = user.player
     player_id = player.id
+    # set currentWorld
+    player.currentWorld = World.objects.all().last().uuid
     uuid = player.uuid
     room = player.room()
     players = room.playerNames(player_id)
+    player.save()
     return JsonResponse({'uuid': uuid, 'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players}, safe=True)
+
+# create_world endpoint
 
 
 """
@@ -46,17 +51,23 @@ def initialize(request):
 @csrf_exempt
 @api_view(["GET"])
 def world(request):
-    """Return a JSON list of every room
+    """Return the map
     """
-    data = {}
+    user = request.user
+    player = user.player
     # get world width and height
+    world = World.objects.get(uuid=player.currentWorld)
+
     # add to data
+    data = {'world': world.uuid, 'width': world.width, 'height': world.height}
 
     # get rooms
-    for room in Room.objects.all():
-        # add room rooms to return object
-        data[f'r{room.row}c{room.col} = {'title': room.title, 'description': room.description,
-             'n': room.n_to, 's': room.s_to, 'e': room.e_to, 'w': room.w_to}
+    rooms = Room.objects.filter(world=player.currentWorld)
+    data['room_count'] = rooms.count()
+    for room in rooms:
+        # add rooms to return object
+        data[f'r{room.row}c{room.col}'] = {'title': room.title, 'description': room.description,
+                                           'n': room.n_to, 's': room.s_to, 'e': room.e_to, 'w': room.w_to, 'tile_num': room.tile_num}
 
     return JsonResponse({'data': data})
 
