@@ -59,17 +59,18 @@ def world(request):
     world = World.objects.get(uuid=player.currentWorld)
 
     # add to data
-    data = {'world': world.uuid, 'width': world.width, 'height': world.height}
+    data = {'world': world.uuid, 'width': world.width,
+            'height': world.height, 'rooms': {}}
 
     # get rooms
     rooms = Room.objects.filter(world=player.currentWorld)
     data['room_count'] = rooms.count()
     for room in rooms:
         # add rooms to return object
-        data[f'r{room.row}c{room.col}'] = {'title': room.title, 'description': room.description,
-                                           'n': room.n_to, 's': room.s_to, 'e': room.e_to, 'w': room.w_to, 'tile_num': room.tile_num}
+        data['rooms'][f'r{room.row}c{room.col}'] = {'title': room.title, 'description': room.description,
+                                                    'n': room.n_to, 's': room.s_to, 'e': room.e_to, 'w': room.w_to, 'tile_num': room.tile_num}
 
-    return JsonResponse({'data': data})
+    return JsonResponse(data)
 
 
 @csrf_exempt
@@ -105,10 +106,11 @@ def move(request):
         # for p_uuid in nextPlayerUUIDs:
         #     pusher.trigger(f'p-channel-{p_uuid}', u'broadcast', {
         #                    'message': f'{player.user.username} has entered from the {reverse_dirs[direction]}.'})
-        return JsonResponse({'name': player.user.username, 'title': nextRoom.title, 'description': nextRoom.description, 'players': players, 'error_msg': ""}, safe=True)
+        new_pos = Room.objects.get(id=player.currentRoom)
+        return JsonResponse({'name': player.user.username, 'title': nextRoom.title, 'description': nextRoom.description, 'players': players, 'error_msg': "", 'new_row': new_pos.row, 'new_col': new_pos.col}, safe=True)
     else:
         players = room.playerNames(player_id)
-        return JsonResponse({'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players, 'error_msg': "You cannot move that way."}, safe=True)
+        return JsonResponse({'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players, 'error_msg': "You cannot move that way.", 'row': room.row, 'col': room.col}, safe=True)
 
 
 @csrf_exempt
