@@ -20,7 +20,7 @@ def initialize(request):
     player = user.player
     player_id = player.id
     # set currentWorld
-    player.currentWorld = World.objects.all().first().uuid
+    player.currentWorld = World.objects.all().last().uuid
     uuid = player.uuid
     room = player.room()
     players = room.playerNames(player_id)

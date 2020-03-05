@@ -26,6 +26,7 @@ class Command(BaseCommand):
             # set player start position
             for p in players:
                 p.currentRoom = start_room.id
+                p.currentWorld = new_world.uuid
                 p.save()
 
         except:
