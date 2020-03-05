@@ -25,16 +25,43 @@ def initialize(request):
     return JsonResponse({'uuid': uuid, 'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players}, safe=True)
 
 
+"""
+{
+    width: 2,
+    height: 2,
+    rooms: {
+        r0c0: {
+            title: "apple",
+            column: 0,
+            row: 0,
+            n_to: null,
+            s_to: {row: 1, col: 0},
+            e_to: null,
+            w_to: null,
+            tile_num: 3,
+        },
+    }
+}
+"""
+@csrf_exempt
 @api_view(["GET"])
 def world(request):
     """Return a JSON list of every room
     """
-    data = []
+    data = {}
+    # get world width and height
+    # add to data
+
+    # get rooms
     for room in Room.objects.all():
-        data.append({'title': room.title, 'description': room.description})
+        # add room rooms to return object
+        data[f'r{room.row}c{room.col} = {'title': room.title, 'description': room.description,
+             'n': room.n_to, 's': room.s_to, 'e': room.e_to, 'w': room.w_to}
+
     return JsonResponse({'data': data})
 
 
+@csrf_exempt
 @api_view(["POST"])
 def move(request):
     dirs = {"n": "north", "s": "south", "e": "east", "w": "west"}

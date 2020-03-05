@@ -117,6 +117,11 @@ class World(models.Model):
 
 
 
+# class World(models.Model):
+    # width = models.IntegerField(default=3)
+    # height = models.IntegerField(default=3)
+
+
 class Player(models.Model):
     # creates a Player everytime a new user registers
     user = models.OneToOneField(User, on_delete=models.CASCADE)
