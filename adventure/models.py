@@ -93,19 +93,14 @@ class Room(models.Model):
                     else:
                         self.tile_num = 0
 
-
-
-
-
-
 class World(models.Model):
     width = models.IntegerField(default=3)
     height = models.IntegerField(default=3)
 
     def get_neighbor_cells(self, grid, current):
         empty_neighbors = []
-        y = current.y
-        x = current.x
+        y = current.row
+        x = current.col
         # check above
         if y > 0 and grid[y - 1][x] == None:
             empty_neighbors.append((y - 1, x, 'n'))
