@@ -28,6 +28,7 @@ class Room(models.Model):
         setattr(self, f"{direction}_to", connecting_room)
         setattr(connecting_room, f"{reverse_dir}_to", self)
         self.save()
+        connecting_room.save()
 
     def get_room_in_direction(self, direction):
         '''
@@ -68,7 +69,7 @@ class World(models.Model):
         # return array of neighbor cells that have a current value of None
         return empty_neighbors
 
-    def dfs_backtracker(self, size_x, size_y):
+    def dfs_backtracker(self, size_x, size_y, world):
         directions = ['n', 's', 'e', 'w']
         self.width = size_x
         self.height = size_y
@@ -78,8 +79,8 @@ class World(models.Model):
         stack = []
         # choose an initial cell, create a Room in that cell
         start_coords = (size_y // 2, size_x // 2)
-        start_room = grid[start_coords[0]][start_coords[1]] = Room(str(
-            uuid4()), 'Start room', 'the adventurer begins their journey', start_coords[1], start_coords[0], self)
+        start_room = grid[start_coords[0]][start_coords[1]] = Room(title='Start room',
+description='the adventurer begins their journey', col=start_coords[1], row=start_coords[0], world=world)
         # push cell to stack
         stack.append(start_room)
         #  while the stack is not empty:
@@ -115,11 +116,6 @@ class World(models.Model):
         self.grid = grid
 
 
-
-
-# class World(models.Model):
-    # width = models.IntegerField(default=3)
-    # height = models.IntegerField(default=3)
 
 
 class Player(models.Model):
