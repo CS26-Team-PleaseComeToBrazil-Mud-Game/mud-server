@@ -14,32 +14,37 @@ class Room(models.Model):
     s_to = models.IntegerField(default=0)
     e_to = models.IntegerField(default=0)
     w_to = models.IntegerField(default=0)
-    col = models.IntegerField()
-    row = models.IntegerField()
-    tile_num = models.IntegerField()
-    # world = some world id
-    # map_width
-    # map_height
+    col = models.IntegerField(default=0)
+    row = models.IntegerField(default=0)
+    tile_num = models.IntegerField(default=0)
+    world = models.IntegerField(default=0)
 
-    def connectRooms(self, destinationRoom, direction):
-        destinationRoomID = destinationRoom.id
-        try:
-            destinationRoom = Room.objects.get(id=destinationRoomID)
-        except Room.DoesNotExist:
-            print("That room does not exist")
-        else:
-            if direction == "n":
-                self.n_to = destinationRoomID
-            elif direction == "s":
-                self.s_to = destinationRoomID
-            elif direction == "e":
-                self.e_to = destinationRoomID
-            elif direction == "w":
-                self.w_to = destinationRoomID
-            else:
-                print("Invalid direction")
-                return
-            self.save()
+    def set_tile_num(self):
+        # e
+        if not self.n_to and not self.s_to and self.e_to and not self.w_to:
+            self.tile_num = 1
+        # n
+        if self.n_to and not self.s_to and not self.e_to and not self.w_to:
+            self.tile_num = 2
+        #
+        # save changes
+        self.save()
+
+    def connectRooms(self, connecting_room, direction):
+        reverse_dirs = {"n": "s", "s": "n", "e": "w", "w": "e"}
+        reverse_dir = reverse_dirs[direction]
+        # set connecting room
+        setattr(self, f"{direction}_to", connecting_room)
+        # set neighbor connecting room
+        setattr(connecting_room, f"{reverse_dir}_to", self)
+        self.save()
+        connecting_room.save()
+
+    def get_room_in_direction(self, direction):
+        '''
+        Connect two rooms in the given n/s/e/w direction
+        '''
+        return getattr(self, f"{direction}_to")
 
     def playerNames(self, currentPlayerID):
         return [p.user.username for p in Player.objects.filter(currentRoom=self.id) if p.id != int(currentPlayerID)]
@@ -47,10 +52,13 @@ class Room(models.Model):
     def playerUUIDs(self, currentPlayerID):
         return [p.uuid for p in Player.objects.filter(currentRoom=self.id) if p.id != int(currentPlayerID)]
 
+    def __repr__(self):
+        return f'({self.col}, {self.row})'
 
-# class World(models.Model):
-    # width = models.IntegerField(default=3)
-    # height = models.IntegerField(default=3)
+
+class World(models.Model):
+    width = models.IntegerField(default=3)
+    height = models.IntegerField(default=3)
 
 
 class Player(models.Model):
