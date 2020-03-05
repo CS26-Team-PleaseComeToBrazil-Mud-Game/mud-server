@@ -27,6 +27,8 @@ def initialize(request):
     player.save()
     return JsonResponse({'uuid': uuid, 'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players}, safe=True)
 
+# create_world endpoint
+
 
 """
 {
@@ -60,7 +62,9 @@ def world(request):
     data = {'width': world.width, 'height': world.height}
 
     # get rooms
-    for room in Room.objects.all():
+    rooms = Room.objects.filter(world=player.currentWorld)
+    data['room_count'] = rooms.count()
+    for room in rooms:
         # add rooms to return object
         data[f'r{room.row}c{room.col}'] = {'title': room.title, 'description': room.description,
                                            'n': room.n_to, 's': room.s_to, 'e': room.e_to, 'w': room.w_to, 'tile_num': room.tile_num}
