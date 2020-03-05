@@ -72,6 +72,7 @@ class World:
         directions = ['n', 's', 'e', 'w']
         self.width = size_x
         self.height = size_y
+        order = [z for z in range(size_x * size_y, 0, -1)]
         # create empty grid
         grid = [[None] * size_x for y in range(0, size_y)]
         stack = []

@@ -14,6 +14,12 @@ class Room(models.Model):
     s_to = models.IntegerField(default=0)
     e_to = models.IntegerField(default=0)
     w_to = models.IntegerField(default=0)
+    col = models.IntegerField()
+    row = models.IntegerField()
+    tile_num = models.IntegerField()
+    # world = some world id
+    # map_width
+    # map_height
 
     def connectRooms(self, destinationRoom, direction):
         destinationRoomID = destinationRoom.id
@@ -42,10 +48,17 @@ class Room(models.Model):
         return [p.uuid for p in Player.objects.filter(currentRoom=self.id) if p.id != int(currentPlayerID)]
 
 
+# class World(models.Model):
+    # width = models.IntegerField(default=3)
+    # height = models.IntegerField(default=3)
+
+
 class Player(models.Model):
     # creates a Player everytime a new user registers
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     currentRoom = models.IntegerField(default=0)
+    # currentRow = models.IntegerField()
+    # currentColumn = models.IntegerField()
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
 
     def initialize(self):

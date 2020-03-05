@@ -1,13 +1,21 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
 from adventure.models import Player, Room
+# generate rooms
+# create world in the database
+# newWorld = World(width,height)
+# save to the db
+# iterate over the rooms and assign a tile number
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             Room.objects.all().delete()
+            # self.stdout.write('Deleted all rooms')
+            # self.stdout.write(Room.objects.all().count())
 
+            # self.stdout.write('Creating rooms...')
             r_outside = Room(title="Outside Cave Entrance",
                              description="North of you, the cave mount beckons")
 
@@ -26,10 +34,15 @@ class Command(BaseCommand):
             earlier adventurers. The only exit is to the south.""")
 
             r_outside.save()
+            # self.stdout.write(f'room added db: {room.title}')
             r_foyer.save()
+            # self.stdout.write(f'room added db: {room.title}')
             r_overlook.save()
+            # self.stdout.write(f'room added db: {room.title}')
             r_narrow.save()
+            # self.stdout.write(f'room added db: {room.title}')
             r_treasure.save()
+            # self.stdout.write(f'room added db: {room.title}')
 
             # Link rooms together
             r_outside.connectRooms(r_foyer, "n")
