@@ -1,6 +1,6 @@
 # from django.contrib import admin, sessions
 from django.contrib import admin
-from .models import Room, Player
+from .models import Room, Player, World
 
 # auth
 # admin.site.register(sessions.models.Session)
@@ -8,3 +8,4 @@ from .models import Room, Player
 # game
 admin.site.register(Room)
 admin.site.register(Player)
+admin.site.register(World)

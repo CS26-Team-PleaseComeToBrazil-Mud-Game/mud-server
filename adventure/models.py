@@ -17,26 +17,68 @@ class Room(models.Model):
     col = models.IntegerField(default=0)
     row = models.IntegerField(default=0)
     tile_num = models.IntegerField(default=0)
-    world = models.IntegerField(default=0)
+    world = models.UUIDField()
 
     def set_tile_num(self):
-        # e
-        if not self.n_to and not self.s_to and self.e_to and not self.w_to:
+        # w
+        if not self.n_to and not self.s_to and not self.e_to and self.w_to:
             self.tile_num = 1
         # n
-        if self.n_to and not self.s_to and not self.e_to and not self.w_to:
+        elif self.n_to and not self.s_to and not self.e_to and not self.w_to:
             self.tile_num = 2
-        #
+        # e
+        elif not self.n_to and not self.s_to and self.e_to and not self.w_to:
+            self.tile_num = 3
+        # s
+        elif not self.n_to and self.s_to and not self.e_to and not self.w_to:
+            self.tile_num = 4
+        # e,w
+        elif not self.n_to and not self.s_to and self.e_to and self.w_to:
+            self.tile_num = 5
+        # n,s
+        elif self.n_to and self.s_to and not self.e_to and not self.w_to:
+            self.tile_num = 6
+        # n,e
+        elif self.n_to and not self.s_to and self.e_to and not self.w_to:
+            self.tile_num = 7
+        # e,s
+        elif not self.n_to and self.s_to and self.e_to and not self.w_to:
+            self.tile_num = 8
+        # w,s
+        elif not self.n_to and self.s_to and not self.e_to and self.w_to:
+            self.tile_num = 9
+        # w,n
+        elif self.n_to and not self.s_to and not self.e_to and self.w_to:
+            self.tile_num = 10
+        # n,e,w
+        elif self.n_to and not self.s_to and self.e_to and self.w_to:
+            self.tile_num = 11
+        # n,e,s
+        elif self.n_to and self.s_to and self.e_to and not self.w_to:
+            self.tile_num = 12
+        # w,e,s
+        elif not self.n_to and self.s_to and self.e_to and self.w_to:
+            self.tile_num = 13
+        # w,n,s
+        elif self.n_to and self.s_to and not self.e_to and self.w_to:
+            self.tile_num = 14
+        # w,n,s
+        elif self.n_to and self.s_to and self.e_to and self.w_to:
+            self.tile_num = 15
         # save changes
-        self.save()
+        # self.save
 
     def connectRooms(self, connecting_room, direction):
         reverse_dirs = {"n": "s", "s": "n", "e": "w", "w": "e"}
         reverse_dir = reverse_dirs[direction]
         # set connecting room
-        setattr(self, f"{direction}_to", connecting_room)
+        setattr(self, f"{direction}_to", connecting_room.id)
         # set neighbor connecting room
-        setattr(connecting_room, f"{reverse_dir}_to", self)
+        setattr(connecting_room, f"{reverse_dir}_to", self.id)
+        # update tile number
+        self.set_tile_num()
+        connecting_room.set_tile_num()
+        # save changes
         self.save()
         connecting_room.save()
 
@@ -57,6 +99,7 @@ class Room(models.Model):
 
 
 class World(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     width = models.IntegerField(default=3)
     height = models.IntegerField(default=3)
 
@@ -65,8 +108,7 @@ class Player(models.Model):
     # creates a Player everytime a new user registers
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     currentRoom = models.IntegerField(default=0)
-    # currentRow = models.IntegerField()
-    # currentColumn = models.IntegerField()
+    currentWorld = models.UUIDField(null=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
 
     def initialize(self):

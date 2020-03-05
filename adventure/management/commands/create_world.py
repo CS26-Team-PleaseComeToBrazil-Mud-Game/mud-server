@@ -1,25 +1,32 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
-from adventure.models import Player, Room, World
-from dfs_backtracker import dfs_backtracker
-from uuid import uuid4
+from adventure.models import Player, World
+from .dfs_backtracker import dfs_backtracker
 
 
 class Command(BaseCommand):
+    help = 'Creates a world. Invoke with "manage.py create_world --width #  --height #"'
+
+    def add_arguments(self, parser):
+        parser.add_argument('--width',  type=int, default=3)
+        parser.add_argument('--height',  type=int, default=3)
+
     def handle(self, *args, **options):
         try:
 
-            # create world in the database
-        new_world = World(width=3, height=3, id=uuid4())
-        # generate rooms
-        dfs_backtracker(new_world)
-        # iterate over the rooms and assign a tile number
+            # create new world
+            new_world = World(
+                width=options['width'], height=options['height'])
+            new_world.save()
 
-        # add players to world
-        #    players = Player.objects.all()
-        #     for p in players:
-        #         p.currentRoom = r_outside.id
-        #         p.save()
+            # generate rooms
+            start_room = dfs_backtracker(new_world)
+
+            players = Player.objects.all()
+            # set player start position
+            for p in players:
+                p.currentRoom = start_room.id
+                p.save()
 
         except:
-            raise CommandError("Error executing create_world.py")
+            raise CommandError("Error executing create_world")
