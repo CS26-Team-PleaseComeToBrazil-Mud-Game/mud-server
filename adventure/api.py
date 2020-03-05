@@ -59,7 +59,7 @@ def world(request):
     world = World.objects.get(uuid=player.currentWorld)
 
     # add to data
-    data = {'width': world.width, 'height': world.height}
+    data = {'world': world.uuid, 'width': world.width, 'height': world.height}
 
     # get rooms
     rooms = Room.objects.filter(world=player.currentWorld)
