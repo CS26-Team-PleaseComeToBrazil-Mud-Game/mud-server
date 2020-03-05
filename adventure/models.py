@@ -45,6 +45,59 @@ class Room(models.Model):
     def __repr__(self):
         return f'({self.col}, {self.row})'
 
+    def tile_tree(self):
+        if self.n_to:
+            if self.e_to:
+                if self.s_to:
+                    if self.w_to:
+                        self.tile_num = 15
+                    else:
+                        self.tile_num = 12
+                else:
+                    if self.w_to:
+                        self.tile_num = 11
+                    else:
+                        self.tile_num = 7
+            else:
+                if self.s_to:
+                    if self.w_to:
+                        self.tile_num = 14
+                    else:
+                        self.tile_num = 6
+                else:
+                    if self.w_to:
+                        self.tile_num = 10
+                    else:
+                        self.tile_num = 2
+        else:
+            if self.e_to:
+                if self.s_to:
+                    if self.w_to:
+                        self.tile_num = 13
+                    else:
+                        self.tile_num = 8
+                else:
+                    if self.w_to:
+                        self.tile_num = 5
+                    else:
+                        self.tile_num = 3
+            else:
+                if self.s_to:
+                    if self.w_to:
+                        self.tile_num = 9
+                    else:
+                        self.tile_num = 4
+                else:
+                    if self.w_to:
+                        self.tile_num = 1
+                    else:
+                        self.tile_num = 0
+
+
+
+
+
+
 class World(models.Model):
     width = models.IntegerField(default=3)
     height = models.IntegerField(default=3)
