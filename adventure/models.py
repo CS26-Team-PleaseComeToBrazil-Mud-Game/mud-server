@@ -66,7 +66,7 @@ class Room(models.Model):
         elif self.n_to and self.s_to and self.e_to and self.w_to:
             self.tile_num = 15
         # save changes
-        # self.save
+        self.save
 
     def connectRooms(self, connecting_room, direction):
         reverse_dirs = {"n": "s", "s": "n", "e": "w", "w": "e"}
@@ -75,9 +75,6 @@ class Room(models.Model):
         setattr(self, f"{direction}_to", connecting_room.id)
         # set neighbor connecting room
         setattr(connecting_room, f"{reverse_dir}_to", self.id)
-        # update tile number
-        self.set_tile_num()
-        connecting_room.set_tile_num()
         # save changes
         self.save()
         connecting_room.save()

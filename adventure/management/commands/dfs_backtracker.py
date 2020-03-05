@@ -68,4 +68,9 @@ def dfs_backtracker(world):
             # push the new room to the stack.
             stack.append(new_room)
 
+    # set room tile number
+    for row in grid:
+        for room in row:
+            room.set_tile_num()
+
     return start_room
