@@ -10,14 +10,14 @@ class Room(models.Model):
     title = models.CharField(max_length=50, default="DEFAULT TITLE")
     description = models.CharField(
         max_length=500, default="DEFAULT DESCRIPTION")
-    n_to = models.IntegerField(default=0)
-    s_to = models.IntegerField(default=0)
-    e_to = models.IntegerField(default=0)
-    w_to = models.IntegerField(default=0)
+    n_to = models.ForeignKey(Room, default=Null, null=True)
+    s_to = models.ForeignKey(Room, default=Null, null=True)
+    e_to = models.ForeignKey(Room, default=Null, null=True)
+    w_to = models.ForeignKey(Room, default=Null, null=True)
     col = models.IntegerField(default=0)
     row = models.IntegerField(default=0)
     tile_num = models.IntegerField(default=0)
-    world = models.UUIDField()
+    world = models.ForeignKey(World, on_delete=CASCADE, null=True)
 
     def set_tile_num(self):
         # w
@@ -99,13 +99,14 @@ class World(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     width = models.IntegerField(default=3)
     height = models.IntegerField(default=3)
+    start_room = models.ForeignKey(Room, null=True)
 
 
 class Player(models.Model):
     # creates a Player everytime a new user registers
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    currentRoom = models.IntegerField(default=0)
-    currentWorld = models.UUIDField(null=True)
+    currentRoom = models.ForeignKey(Room, null=True)
+    currentWorld = models.ForeignKey(World, null=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True)
 
     def initialize(self):

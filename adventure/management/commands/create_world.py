@@ -27,6 +27,9 @@ class Command(BaseCommand):
             self.stdout.write(f'execution time: {end_time - start_time} s')
             players = Player.objects.all()
 
+            # set world start position
+            new_world.start_room = start_room.id
+            new_world.save()
             # set player start position
             for p in players:
                 p.currentRoom = start_room.id

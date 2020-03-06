@@ -19,35 +19,19 @@ def initialize(request):
     user = request.user
     player = user.player
     player_id = player.id
-    # set currentWorld
-    player.currentWorld = World.objects.all().last().uuid
+    # set currentWorld and currentRoom
+    world = World.objects.all().last()
+    player.currentWorld = world.uuid
+    player.currentRoom = world.start_room
     uuid = player.uuid
     room = player.room()
     players = room.playerNames(player_id)
     player.save()
-    return JsonResponse({'uuid': uuid, 'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players}, safe=True)
+    return JsonResponse({'uuid': uuid, 'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players, 'currentRow': room.row, 'currentCol': room.col}, safe=True)
 
 # create_world endpoint
 
 
-"""
-{
-    width: 2,
-    height: 2,
-    rooms: {
-        r0c0: {
-            title: "apple",
-            column: 0,
-            row: 0,
-            n_to: null,
-            s_to: {row: 1, col: 0},
-            e_to: null,
-            w_to: null,
-            tile_num: 3,
-        },
-    }
-}
-"""
 @csrf_exempt
 @api_view(["GET"])
 def world(request):
@@ -57,7 +41,7 @@ def world(request):
     player = user.player
     # get world width and height
     world = World.objects.get(uuid=player.currentWorld)
-
+    # get col and row of player's current room
     # add to data
     data = {'world': world.uuid, 'width': world.width,
             'height': world.height, 'rooms': {}}
