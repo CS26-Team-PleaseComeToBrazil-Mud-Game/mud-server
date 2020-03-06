@@ -107,7 +107,7 @@ class World(models.Model):
 
 class Player(models.Model):
     # creates a Player everytime a new user registers
-    user = models.OneToOneField('User', on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     currentRoom = models.ForeignKey(
         'Room', on_delete=models.SET_NULL, default=None, null=True)
     currentWorld = models.ForeignKey(
@@ -121,7 +121,8 @@ class Player(models.Model):
 
     def room(self):
         try:
-            return Room.objects.get(id=self.currentRoom)
+            # return Room.objects.get(id=self.currentRoom)
+            return self.currentRoom
         except Room.DoesNotExist:
             self.initialize()
             return self.room()
