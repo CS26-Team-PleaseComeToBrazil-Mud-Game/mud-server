@@ -39,12 +39,23 @@ def world(request):
     """
     user = request.user
     player = user.player
+    world = null
     # get world width and height
-    world = World.objects.get(uuid=player.currentWorld)
-    # get col and row of player's current room
+    if not player.currentWorld:
+        world = World.objects.all().last()
+        # set current players currentworld = world
+        player.currentWorld = world
+    else:
+        world = World.objects.get(id=player.currentWorld)
+    # set current players currentroom = world.start_room
+    player.currentRoom = world.start_room
+    player.save()
+    # get row and col number of the start room
+    start_room = Room.objects.get(id=player.currentRoom)
+
     # add to data
     data = {'world': world.uuid, 'width': world.width,
-            'height': world.height, 'rooms': {}}
+            'height': world.height, 'rooms': {}, 'start_col': start_room.col, 'start_row': start_room.row}
 
     # get rooms
     rooms = Room.objects.filter(world=player.currentWorld)

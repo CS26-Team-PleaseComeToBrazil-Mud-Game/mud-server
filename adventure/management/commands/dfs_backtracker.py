@@ -26,7 +26,7 @@ def get_neighbor_cells(grid, current):
 def dfs_backtracker(world):
     w = world.width
     h = world.height
-    id = world.uuid
+    id = world.id
     # create empty grid
     grid = [[None] * w for y in range(0, h)]
     # track visited cells
