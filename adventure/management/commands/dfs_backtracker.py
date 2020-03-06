@@ -26,7 +26,7 @@ def get_neighbor_cells(grid, current):
 def dfs_backtracker(world):
     w = world.width
     h = world.height
-    id = world.uuid
+    id = world.id
     # create empty grid
     grid = [[None] * w for y in range(0, h)]
     # track visited cells
@@ -35,7 +35,7 @@ def dfs_backtracker(world):
     start_coords = {'row': h // 2, 'col': w // 2}
     # create first room
     start_room = grid[start_coords['row']][start_coords['col']] = Room(
-        title='', description='', row=start_coords['row'], col=start_coords['col'], world=id)
+        title='', description='', row=start_coords['row'], col=start_coords['col'], world=world)
     start_room.save()
     # push cell to stack
     stack.append(start_room)
@@ -57,7 +57,7 @@ def dfs_backtracker(world):
 
             # create a Room in empty_cell
             new_room = grid[empty_cell['row']][empty_cell['col']] = Room(
-                title='', description='', col=empty_cell['col'], row=empty_cell['row'], world=id)
+                title='', description='', col=empty_cell['col'], row=empty_cell['row'], world=world)
 
             # save new room to db
             new_room.save()

@@ -19,35 +19,19 @@ def initialize(request):
     user = request.user
     player = user.player
     player_id = player.id
-    # set currentWorld
-    player.currentWorld = World.objects.all().last().uuid
+    # set currentWorld and currentRoom
+    world = World.objects.all().last()
+    player.currentWorld = world.uuid
+    player.currentRoom = world.start_room
     uuid = player.uuid
     room = player.room()
     players = room.playerNames(player_id)
     player.save()
-    return JsonResponse({'uuid': uuid, 'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players}, safe=True)
+    return JsonResponse({'uuid': uuid, 'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players, 'currentRow': room.row, 'currentCol': room.col}, safe=True)
 
 # create_world endpoint
 
 
-"""
-{
-    width: 2,
-    height: 2,
-    rooms: {
-        r0c0: {
-            title: "apple",
-            column: 0,
-            row: 0,
-            n_to: null,
-            s_to: {row: 1, col: 0},
-            e_to: null,
-            w_to: null,
-            tile_num: 3,
-        },
-    }
-}
-"""
 @csrf_exempt
 @api_view(["GET"])
 def world(request):
@@ -55,12 +39,24 @@ def world(request):
     """
     user = request.user
     player = user.player
+    world = None
     # get world width and height
-    world = World.objects.get(uuid=player.currentWorld)
+    if not player.currentWorld:
+        world = World.objects.all().last()
+        # set current players currentworld = world
+        player.currentWorld = world
+    else:
+        world = player.currentWorld
+    # set current players currentroom = world.start_room
+
+    start_room = Room.objects.get(id=world.start_room)
+    player.currentRoom = start_room
+    player.save()
+    # get row and col number of the start room
 
     # add to data
     data = {'world': world.uuid, 'width': world.width,
-            'height': world.height, 'rooms': {}}
+            'height': world.height, 'rooms': {}, 'start_col': start_room.col, 'start_row': start_room.row}
 
     # get rooms
     rooms = Room.objects.filter(world=player.currentWorld)
@@ -83,7 +79,7 @@ def move(request):
     player_uuid = player.uuid
     data = request.data
     direction = data['direction']
-    room = player.room()
+    room = player.currentRoom
     nextRoomID = None
     if direction == "n":
         nextRoomID = room.n_to
@@ -95,7 +91,8 @@ def move(request):
         nextRoomID = room.w_to
     if nextRoomID is not None and nextRoomID > 0:
         nextRoom = Room.objects.get(id=nextRoomID)
-        player.currentRoom = nextRoomID
+        # get room with target id
+        player.currentRoom = Room.objects.get(id=nextRoomID)
         player.save()
         players = nextRoom.playerNames(player_id)
         currentPlayerUUIDs = room.playerUUIDs(player_id)
@@ -106,8 +103,7 @@ def move(request):
         # for p_uuid in nextPlayerUUIDs:
         #     pusher.trigger(f'p-channel-{p_uuid}', u'broadcast', {
         #                    'message': f'{player.user.username} has entered from the {reverse_dirs[direction]}.'})
-        new_pos = Room.objects.get(id=player.currentRoom)
-        return JsonResponse({'name': player.user.username, 'title': nextRoom.title, 'description': nextRoom.description, 'players': players, 'error_msg': "", 'new_row': new_pos.row, 'new_col': new_pos.col}, safe=True)
+        return JsonResponse({'name': player.user.username, 'title': nextRoom.title, 'description': nextRoom.description, 'players': players, 'error_msg': "", 'new_row': player.currentRoom.row, 'new_col': player.currentRoom.col}, safe=True)
     else:
         players = room.playerNames(player_id)
         return JsonResponse({'name': player.user.username, 'title': room.title, 'description': room.description, 'players': players, 'error_msg': "You cannot move that way.", 'row': room.row, 'col': room.col}, safe=True)
